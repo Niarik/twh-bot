@@ -2,7 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from weather_cycle import start_season_schedule
-from ingame_commands import poll_ingame_chat, set_bot
+from ingame_commands import handle_ingame_command, set_bot
 from seasons import post_season_announcement, get_current_season, get_current_season_times
 
 intents = discord.Intents.default()
