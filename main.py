@@ -131,4 +131,4 @@ async def on_app_command_error(interaction: discord.Interaction, error):
     else:
         await interaction.response.send_message("⚠️ Something went wrong.", ephemeral=True)
 
-bot.run(os.getenv("MTM1OTQ4NTc5NDg1NDg5NTcwNw.GZOO8P.d4I2Y6XK02ivvtjWRK709Ru8Z9eigGEojTWZQA"))
+bot.run(os.getenv("BOT_TOKEN"))
