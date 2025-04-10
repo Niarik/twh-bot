@@ -82,7 +82,7 @@ async def poll_ingame_chat():
 
                 if message in TP_COORDINATES:
                     coords = random.choice(TP_COORDINATES[message])
-                    mcr.command(f"/teleport {coords}")
+                    mcr.command(f"/teleport ({coords})")
                     mcr.command(f"/sysmsg {user_id} You have been teleported to {message[1:].capitalize()}.")
 
                 elif message == "!freezehealth":
