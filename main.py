@@ -8,7 +8,19 @@ from weather_cycle import cycle_weather, pause_weather_for, resume_weather, set_
 from water_quality import update_water_quality
 import datetime
 import importlib
-import json
+import os
+
+config = {
+    "rcon": {
+        "host": os.getenv("RCON_HOST"),
+        "port": int(os.getenv("RCON_PORT")),
+        "password": os.getenv("RCON_PASSWORD")
+    },
+    "interval_minutes": 20,
+    "announce_channel_id": 1303375972258812036,
+    "log_channel_id": 1359506060414812284
+}
+
 from ingame_commands import poll_ingame_chat, set_bot as set_ingame_bot
 
 
@@ -119,4 +131,4 @@ async def on_app_command_error(interaction: discord.Interaction, error):
     else:
         await interaction.response.send_message("⚠️ Something went wrong.", ephemeral=True)
 
-bot.run("MTM1OTQ4NTc5NDg1NDg5NTcwNw.G_OtFr.xwFGkf_vTYXUm_FvDtQrZoS6d9tviFjD8uCjNA")
+bot.run(os.getenv("BOT_TOKEN"))
