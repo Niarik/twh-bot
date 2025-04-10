@@ -48,8 +48,8 @@ def set_bot(bot):
 @tasks.loop(seconds=5)
 async def poll_ingame_chat():
     print("[poll_ingame_chat] Loop started")
-    print("[poll_ingame_chat] Loading config.json")
     try:
+        print("[poll_ingame_chat] Loading config.json")
         with open("config.json", "r") as f:
             config = json.load(f)
 
@@ -85,7 +85,7 @@ async def poll_ingame_chat():
                 elif message in ADMIN_ONLY_COMMANDS and user_id not in AUTHORIZED_IDS:
                     continue
 
-                if message in TP_COORDINATES:
+                elif message in TP_COORDINATES:
                     coords = random.choice(TP_COORDINATES[message])
                     mcr.command(f"/teleport ({coords})")
                     mcr.command(f"/sysmsg {user_id} You have been teleported to {message[1:].capitalize()}.")
@@ -134,9 +134,8 @@ async def poll_ingame_chat():
                     mcr.command(f"/sysmsg {user_id} Teleporting to {message[3:].capitalize()}.")
 
     except Exception as e:
-    print(f"[In-game Chat Error] {e}")
-    if bot_instance:
-        log_channel = bot_instance.get_channel(LOG_CHANNEL_ID)
-        if log_channel:
-            await log_channel.send(f"⚠️ Error in poll_ingame_chat: {e}")
-
+        print(f"[In-game Chat Error] {e}")
+        if bot_instance:
+            log_channel = bot_instance.get_channel(LOG_CHANNEL_ID)
+            if log_channel:
+                await log_channel.send(f"⚠️ Error in poll_ingame_chat: {e}")
