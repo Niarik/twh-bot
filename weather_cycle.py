@@ -96,3 +96,9 @@ def start_season_schedule(bot):
     set_bot(bot)
     cycle_weather.start()
     update_water_quality.start()
+
+    # Confirm startup via Discord log channel
+    if bot_reference:
+        log_channel = bot_reference.get_channel(1359506060414812284)
+        if log_channel:
+            asyncio.create_task(log_channel.send("✅ poll_ingame_chat is active."))
