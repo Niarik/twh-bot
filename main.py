@@ -30,13 +30,18 @@ async def on_message(message):
 
     # Only process messages from the webhook channel
     if message.channel.id == 1303344696096985120:  # The webhook channel ID
-        if message.content.startswith("!"):
-            user_id = message.content.split(']')[0][1:].strip()  # Extract user ID from [PlayerID]
-            command = message.content.split(" ")[0][1:]  # Get the command (e.g., !pingme)
-
-            if command == "pingme":
-                # Respond to the player in-game with a whisper
-                mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
-            # Add more commands as needed (e.g., !tparbour, !setgrowth)
+        # Extract the necessary fields from the message
+        message_content = message.content
+        if "Message:" in message_content:
+            command_message = message_content.split("Message:")[1].split("\n")[0].strip()  # Extract !pingme or other commands
+            user_id = message_content.split("AlderonId:")[1].split("\n")[0].strip()  # Extract player ID
+            
+            if command_message.startswith("!"):
+                print(f"Received command: {command_message} from {user_id}")
+                
+                # Handle specific commands
+                if command_message == "!pingme":
+                    # Respond to the player in-game with a whisper
+                    mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
 
 bot.run(os.getenv("BOT_TOKEN"))
