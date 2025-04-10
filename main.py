@@ -16,9 +16,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f"Logged in as {bot.user}")
     set_bot(bot)
-    poll_ingame_chat.start()  # ✅ Starts the in-game chat listener
-    cycle_weather.start()
-    update_water_quality.start()
+    poll_ingame_chat.start()
     start_season_schedule(bot)
     await post_season_announcement(bot, get_current_season(), 1303375972258812036)
 
