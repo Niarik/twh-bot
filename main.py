@@ -35,8 +35,8 @@ async def on_message(message):
             command = message.content.split(" ")[0][1:]  # Get the command (e.g., !pingme)
 
             if command == "pingme":
-                # Respond to the player in-game
-                mcr.command(f"/sysmsg {user_id} Ping received. Bot is connected and listening.")
+                # Respond to the player in-game with a whisper
+                mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
             # Add more commands as needed (e.g., !tparbour, !setgrowth)
 
 bot.run(os.getenv("BOT_TOKEN"))
