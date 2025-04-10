@@ -125,7 +125,7 @@ async def poll_ingame_chat():
 
                 elif message in ADMIN_ONLY_COMMANDS:
                     coords = ADMIN_TP_COORDS.get(message, "0 0 0")
-                    mcr.command(f"/teleport {coords}")
+                    mcr.command(f"/teleport ({coords})")
                     mcr.command(f"/sysmsg {user_id} Teleporting to {message[3:].capitalize()}.")
 
     except Exception as e:
