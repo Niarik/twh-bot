@@ -47,6 +47,8 @@ def set_bot(bot):
 
 @tasks.loop(seconds=5)
 async def poll_ingame_chat():
+    print("[poll_ingame_chat] Loop started")
+    print("[poll_ingame_chat] Loading config.json")
     try:
         with open("config.json", "r") as f:
             config = json.load(f)
@@ -132,4 +134,9 @@ async def poll_ingame_chat():
                     mcr.command(f"/sysmsg {user_id} Teleporting to {message[3:].capitalize()}.")
 
     except Exception as e:
-        print(f"[In-game Chat Error] {e}")
+    print(f"[In-game Chat Error] {e}")
+    if bot_instance:
+        log_channel = bot_instance.get_channel(LOG_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(f"⚠️ Error in poll_ingame_chat: {e}")
+
