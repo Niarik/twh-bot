@@ -58,9 +58,9 @@ async def poll_ingame_chat():
         with MCRcon(rcon["host"], rcon["password"], port=rcon["port"]) as mcr:
             output = mcr.command("/getchat")
             print(f"[Raw Chat Output] {output}")  # Debug log for Render
-        if not output:
-            print("[Chat] No output from /getchat")
-        return
+            if not output:
+                print("[Chat] No output from /getchat")
+                return
 
 
             global last_checked_message
