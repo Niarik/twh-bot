@@ -1,0 +1,10 @@
+{
+  "rcon": {
+      "host": "92.118.16.126",
+      "port": 7807,
+      "password": "paulishappy"
+  },
+  "interval_minutes": 20,
+  "announce_channel_id": 1359519868168437790,
+  "log_channel_id": 1359506060414812284
+}
