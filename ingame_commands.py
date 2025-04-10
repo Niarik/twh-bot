@@ -77,7 +77,10 @@ async def poll_ingame_chat():
 
                 message = message.strip().lower()
 
-                if message in ADMIN_ONLY_COMMANDS and user_id not in AUTHORIZED_IDS:
+                if message == "!pingme":
+                    mcr.command(f"/sysmsg {user_id} Ping received. Bot is connected and listening.")
+
+                elif message in ADMIN_ONLY_COMMANDS and user_id not in AUTHORIZED_IDS:
                     continue
 
                 if message in TP_COORDINATES:
