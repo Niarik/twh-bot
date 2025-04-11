@@ -80,6 +80,11 @@ async def update_water_quality():
                 mcr.command(f"/waterquality {location} {value}")
         print(f"[Water Quality] Updated for season {season}")
 
+# Update these variables wherever your weather logic runs
+def get_weather_info():
+    global current_weather, last_weather_change
+    return current_weather, last_weather_change
+
 # Pausing logic
 def pause_weather_for(hours):
     global paused_until
