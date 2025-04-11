@@ -84,27 +84,23 @@ async def resumeweather(ctx):
     resume_weather()
     await ctx.send("▶️ Weather updates resumed.")
 
-@app_commands.command(name="seasonstatus", description="Get the current season and weather info.")
+@app_commands.command(name="seasonstatus", description="Get the current season, dates, and in-game weather.")
 async def slash_seasonstatus(interaction: discord.Interaction):
     current_season = get_current_season()
     times = get_current_season_times()
     start_time = times['start_time']
     end_time = times['end_time']
 
-    # Retrieve weather info
-    from weather_cycle import get_weather_info
-    current_weather, last_weather_change = get_weather_info()
+    # Just retrieve the current weather
+    global current_weather
+    current_weather = current_weather or "unknown"
 
-    # Format last weather change time
-    last_change_str = last_weather_change.strftime("%Y-%m-%d %H:%M:%S") if last_weather_change else "unknown"
-
-    # Send the response
+    # Send a simple response
     await interaction.response.send_message(
         f"🗓️ Current season: **{current_season.title()}**\n"
         f"Start: **{start_time}**\n"
         f"End: **{end_time}**\n\n"
-        f"🌤️ Current weather: **{current_weather}**\n"
-        f"Last weather change: **{last_change_str}**",
+        f"🌤️ Current in-game weather: **{current_weather}**",
         ephemeral=True
     )
 
