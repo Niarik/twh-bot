@@ -84,24 +84,20 @@ async def resumeweather(ctx):
     resume_weather()
     await ctx.send("▶️ Weather updates resumed.")
 
-@app_commands.command(name="seasonstatus", description="Get the current season, dates, and in-game weather.")
-async def slash_seasonstatus(interaction: discord.Interaction):
-    current_season = get_current_season()
-    times = get_current_season_times()
-    start_time = times['start_time']
-    end_time = times['end_time']
+@app_commands.command(name="seasonstatus", description="Check current season and weather")
+async def seasonstatus(interaction: discord.Interaction):
+    season_data = load_json("data/season.json")
+    weather_data = load_json("data/weather.json")
 
-    # Just retrieve the current weather
-    global current_weather
-    current_weather = current_weather or "unknown"
+    current_season = season_data.get("current_season", "Unknown Season")
+    current_weather = weather_data.get("current_weather", "Unknown Weather")
 
-    # Send a simple response
-    await interaction.response.send_message(
-        f"🗓️ Current season: **{current_season.title()}**\n"
-        f"Start: **{start_time}**\n"
-        f"End: **{end_time}**\n\n"
-        f"🌤️ Current in-game weather: **{current_weather}**",
-        ephemeral=True
+    embed = discord.Embed(
+        title="Season and Weather Status",
+        description=f"**Season:** {current_season}\n**Weather:** {current_weather}",
+        color=0x00ffcc
     )
+
+    await interaction.response.send_message(embed=embed)
 
 bot.run(os.getenv("BOT_TOKEN"))
