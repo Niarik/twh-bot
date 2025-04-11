@@ -1,4 +1,10 @@
 import os
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+RCON_HOST = os.getenv("RCON_HOST")
+RCON_PORT = int(os.getenv("RCON_PORT"))
+RCON_PASSWORD = os.getenv("RCON_PASSWORD")
+
 import discord
 from discord.ext import commands
 from weather_cycle import start_season_schedule
