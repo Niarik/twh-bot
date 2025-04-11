@@ -19,11 +19,9 @@ SEASON_DATA = {
         # Long, detailed narrative for #seasons channel
         "narrative": (
             "**The Blooming**\n\n"
-            "The last of the snow has finally thawed; warm rain sweeps in and keeps water sources "
-            "full to bursting and food sources plentiful. Chilly mornings and evenings are "
-            "accompanied by thick fog; the weather varies from lengthy storms to brief showers. "
-            "When the rain clears, it is cloudy and overcast, but the days are warm enough for "
-            "most species to begin their first wave of nesting, hoping to raise their hatchlings "
+            "> The last of the snow has finally thawed; warm rain sweeps in and keeps water sources full to bursting and food sources plentiful."
+            "> Chilly mornings and evenings are accompanied by thick fog; the weather varies from lengthy storms to brief showers."
+            "> When the rain clears, it is cloudy and overcast, but the days are warm enough for most species to begin their first wave of nesting, hoping to raise their hatchlings "
             "enough to get them through the coming drought."
         ),
         # Short announcement for #announcements channel
@@ -38,14 +36,14 @@ SEASON_DATA = {
     "The Drought": {
         "banner_url": "https://raw.githubusercontent.com/Niarik/twh-bot/main/thedrought.png",
         "narrative": (
-            "**The Drought**\n\n"
-            "The rains vanish and the heat scorches the land. Water sources dry up and only the "
-            "strongest endure."
+            "☀️ **The Drought** ☀️\n\n"
+            "> The rains vanish and the heat scorches the land. Water sources dry up and only the strongest endure."
         ),
         "announcement": (
-            "☀️ **The Drought has begun** ☀️\n\n"
-            "- Clear, scorching skies\n"
-            "- Water is scarce; travel to find survival"
+            "## ☀️ **The Drought has begun** ☀️\n\n"
+            "> * It's well hot, might be too hot\n"
+            "> * Water is scarce\n"
+            "> * Wildfires possible\n"
         ),
         "emoji": "☀️"
     },
