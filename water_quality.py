@@ -1,9 +1,9 @@
-# water_quality.py
 import json
 from discord.ext import tasks
 from datetime import datetime
 from mcrcon import MCRcon
 from seasons import get_current_season
+from os import getenv
 
 HOTSPRING_LOCATIONS = [
     "Hotspring1", "Hotspring2", "Hotspring3", "Hotspring4", "Hotspring5", "Hotspring6",
@@ -27,21 +27,21 @@ ALL_LOCATIONS = [
     *HOTSPRING_LOCATIONS
 ]
 
+def send(location, value):
+    try:
+        with MCRcon(
+            getenv("RCON_HOST"),
+            getenv("RCON_PASSWORD"),
+            port=int(getenv("RCON_PORT"))
+        ) as mcr:
+            mcr.command(f"/waterquality {location} {value}")
+            print(f"Set waterquality {location} {value}")
+    except Exception as e:
+        print(f"Failed to set water quality: {e}")
+
 @tasks.loop(hours=3)
 async def update_water_quality():
-    with open("config.json", "r") as f:
-        config = json.load(f)
-
     season = get_current_season()
-    rcon = config["rcon"]
-
-    def send(location, value):
-        try:
-            with MCRcon(rcon["host"], rcon["password"], port=rcon["port"]) as mcr:
-                mcr.command(f"/waterquality {location} {value}")
-                print(f"Set waterquality {location} {value}")
-        except Exception as e:
-            print(f"Failed to set water quality: {e}")
 
     if season == "the drought":
         for loc in ALL_LOCATIONS:
