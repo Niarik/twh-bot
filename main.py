@@ -12,6 +12,26 @@ intents = Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 
+from commands import SeasonCommands
+
+@bot.event
+async def on_ready():
+    print(f"Bot connected as {bot.user}")
+
+    # Sync slash commands
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} slash commands.")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
+
+    await bot.add_cog(SeasonCommands(bot))
+
+    await season_manager.check_season_change()
+    await weather_manager.start_weather_loop()
+    await water_manager.start_water_loop()
+    asyncio.create_task(run_webhook_listener(bot))
+
 season_manager = SeasonManager(bot)
 weather_manager = WeatherManager(bot)
 water_manager = WaterManager()
