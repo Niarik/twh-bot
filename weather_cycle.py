@@ -7,7 +7,7 @@ import json
 from seasons import get_current_season, get_current_season_times
 from mcrcon import MCRcon
 
-current_weather = None
+current_weather = "unknown"
 bot_reference = None
 paused_until = None
 
