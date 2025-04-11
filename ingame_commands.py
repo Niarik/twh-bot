@@ -3,9 +3,6 @@ import random
 import time
 from mcrcon import MCRcon
 
-AUTHORIZED_IDS = {"323-305-595", "045-616-395"}
-ADMIN_ONLY_COMMANDS = {"!tparbour", "!tpyaga", "!tpshaded", "!tpvalkov", "!tpbogwitch"}
-
 TP_COORDINATES = {
     "!redisland": [
         "x=50676 y=312304 z=-3042",
@@ -22,14 +19,21 @@ TP_COORDINATES = {
         "x=-51945 y=185067 z=-2244",
         "x=-25180 y=195142 z=181"
     ]
-}
-
-ADMIN_TP_COORDS = {
-    "!tparbour": "x=-298134 y=-64097 z=-2734",
-    "!tpyaga": "x=-154056 y=136070 z=907",
-    "!tpvalkov": "x=-122689 y=79773 z=2043",
-    "!tpbogwitch": "x=-59631 y=-107544 z=-937",
-    "!tpshaded": "0 0 0"
+    "!tparbour": [
+        "x=-298134 y=-64097 z=-2734",
+    ]
+    "!tpyaga": [
+        "x=-154056 y=136070 z=907",
+    ]
+    "!tpvalkov": [
+        "x=-122689 y=79773 z=2043",
+    ]
+    "!tpbogwitch": [
+        "x=-59631 y=-107544 z=-937",
+    ]
+    "!tpshaded": [
+        "0 0 0"
+    ]
 }
 
 RESPAWN_COOLDOWNS = {}
@@ -48,12 +52,14 @@ async def handle_ingame_command(message: str, user_id: str):
     message = message.strip().lower()
 
     try:
-        with open("config.json", "r") as f:
-            config = json.load(f)
+        import os
 
-        rcon = config["rcon"]
+        with MCRcon(
+            os.getenv("RCON_HOST"),
+            os.getenv("RCON_PASSWORD"),
+            port=int(os.getenv("RCON_PORT"))
+        ) as mcr:
 
-        with MCRcon(rcon["host"], rcon["password"], port=rcon["port"]) as mcr:
             if message == "!pingme":
                 whisper(mcr, user_id, "Ping received. Bot is connected and listening.")
 
@@ -83,30 +89,17 @@ async def handle_ingame_command(message: str, user_id: str):
                     whisper(mcr, user_id, "You have been respawned.")
                     RESPAWN_COOLDOWNS[user_id] = now
 
-            elif message.startswith("!setgrowth"):
+            elif command == "!setgrowth":
                 try:
-                    value = float(message.split()[1])
-                    if not 0 <= value <= 0.99:
-                        whisper(mcr, user_id, "Growth must be between 0.0 and 0.99.")
-                        return
-
-                    mcr.command(f"/setattr growth {value}")
-                    mcr.command("/setattr GrowthPerSecond 0")
-                    whisper(mcr, user_id, f"Growth set to {value}. Growth is frozen! To unfreeze, relog character.")
-
-                    if bot_instance:
-                        log_channel = bot_instance.get_channel(LOG_CHANNEL_ID)
-                        if log_channel:
-                            await log_channel.send(f"🧬 Growth set in-game by `{user_id}` → `{value}` (frozen).")
-
-                except Exception as e:
-                    print(e)
-                    whisper(mcr, user_id, "Usage: !setgrowth <0.0 - 0.99>")
-
-            elif message in ADMIN_ONLY_COMMANDS:
-                coords = ADMIN_TP_COORDS.get(message, "0 0 0")
-                mcr.command(f"/teleport ({coords})")
-                whisper(mcr, user_id, f"Teleporting to {message[3:].capitalize()}.")
+                    growth = float(args)
+                    if 0.0 <= growth <= 1.0:
+                        mcr.command(f"/setattr {player_name} growth {growth}")
+                        mcr.command(f"/setattr {player_name} GrowthPerSecond 0")
+                        print(f"[SetGrowth] {player_name} set to {growth} and frozen")
+                    else:
+                        print(f"[Error] Invalid growth value: {growth}")
+                except ValueError:
+                    print(f"[Error] Could not parse growth value: {args}")
 
     except Exception as e:
         print(f"[In-game Command Error] {e}")
