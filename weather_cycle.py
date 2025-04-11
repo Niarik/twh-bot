@@ -10,7 +10,6 @@ from mcrcon import MCRcon
 current_weather = None
 bot_reference = None
 paused_until = None
-last_weather_change = None
 
 SEASON_WEATHER = {
     "The Blooming": ["rain", "cloudy", "storm", "fog", "overcast"],
@@ -83,8 +82,8 @@ async def update_water_quality():
 
 # Update these variables wherever your weather logic runs
 def get_weather_info():
-    global current_weather, last_weather_change
-    return current_weather, last_weather_change
+    global current_weather,
+    return current_weather,
 
 # Pausing logic
 def pause_weather_for(hours):
