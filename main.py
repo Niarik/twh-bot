@@ -2,6 +2,7 @@ import os
 import json
 import discord
 from discord.ext import commands
+from discord import app_commands
 from mcrcon import MCRcon
 from weather_cycle import start_season_schedule
 from ingame_commands import handle_ingame_command, set_bot
@@ -28,6 +29,8 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
+    @bot.event
+async def on_ready():
     print(f"✅ Logged in as {bot.user}")
     set_bot(bot)
     start_season_schedule()
@@ -36,6 +39,10 @@ async def on_ready():
     # Debug info
     start_time, end_time = get_current_season_times()
     print(f"🗓️ Season started: {start_time} → Ends: {end_time}")
+
+    # Register commands
+    bot.tree.add_command(slash_seasonstatus)
+    await bot.tree.sync()
 
 @bot.event
 async def on_message(message):
@@ -79,9 +86,8 @@ async def resumeweather(ctx):
     resume_weather()
     await ctx.send("▶️ Weather updates resumed.")
 
-@bot.command()
-async def seasonstatus(ctx):
-    """Displays the current season, timing, current weather, and last weather change."""
+@app_commands.command(name="seasonstatus", description="Get the current season and weather info.")
+async def slash_seasonstatus(interaction: discord.Interaction):
     current_season = get_current_season()
     times = get_current_season_times()
     start_time = times['start_time']
@@ -94,10 +100,14 @@ async def seasonstatus(ctx):
     # Format last weather change time
     last_change_str = last_weather_change.strftime("%Y-%m-%d %H:%M:%S") if last_weather_change else "unknown"
 
-    await ctx.send(f"🗓️ Current season: **{current_season.title()}**\n"
-                   f"Start: **{start_time}**\n"
-                   f"End: **{end_time}**\n\n"
-                   f"🌤️ Current weather: **{current_weather}**\n"
-                   f"Last weather change: **{last_change_str}**")
+    # Send the response
+    await interaction.response.send_message(
+        f"🗓️ Current season: **{current_season.title()}**\n"
+        f"Start: **{start_time}**\n"
+        f"End: **{end_time}**\n\n"
+        f"🌤️ Current weather: **{current_weather}**\n"
+        f"Last weather change: **{last_change_str}**",
+        ephemeral=True
+    )
 
 bot.run(os.getenv("BOT_TOKEN"))
