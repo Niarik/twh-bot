@@ -81,13 +81,23 @@ async def resumeweather(ctx):
 
 @bot.command()
 async def seasonstatus(ctx):
-    """Displays the current season and timing."""
+    """Displays the current season, timing, current weather, and last weather change."""
     current_season = get_current_season()
     times = get_current_season_times()
     start_time = times['start_time']
     end_time = times['end_time']
+
+    # Retrieve weather info
+    from weather_cycle import get_weather_info
+    current_weather, last_weather_change = get_weather_info()
+
+    # Format last weather change time
+    last_change_str = last_weather_change.strftime("%Y-%m-%d %H:%M:%S") if last_weather_change else "unknown"
+
     await ctx.send(f"🗓️ Current season: **{current_season.title()}**\n"
                    f"Start: **{start_time}**\n"
-                   f"End: **{end_time}**")
+                   f"End: **{end_time}**\n\n"
+                   f"🌤️ Current weather: **{current_weather}**\n"
+                   f"Last weather change: **{last_change_str}**")
 
 bot.run(os.getenv("BOT_TOKEN"))
