@@ -7,9 +7,10 @@ import json
 from seasons import get_current_season, get_current_season_times
 from mcrcon import MCRcon
 
-current_weather = "unknown"
+current_weather = None
 bot_reference = None
 paused_until = None
+last_weather_change = None
 
 SEASON_WEATHER = {
     "The Blooming": ["rain", "cloudy", "storm", "fog", "overcast"],
