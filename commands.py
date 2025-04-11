@@ -14,6 +14,10 @@ class SeasonCommands(commands.Cog):
 
     @app_commands.command(name="seasoninfo", description="Show current season and weather")
     async def season_info(self, interaction: Interaction):
+        """
+        Displays the current season, when it started, when it ends, 
+        and the current weather (if known).
+        """
         season_data = get_last_season()
         weather = get_last_weather() or "Unknown"
 
@@ -44,15 +48,21 @@ class SeasonCommands(commands.Cog):
 
     @app_commands.command(name="pauseweather", description="Pause weather updates for 4 hours")
     async def pause_weather(self, interaction: Interaction):
+        """
+        Admin-only command that pauses the weather cycle for 4 hours.
+        After 4 hours, it auto-resumes.
+        """
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("You must be an admin to use this command.", ephemeral=True)
             return
 
         set_pause_state(True)
 
-        # Schedule resume in 4 hours
+        # Auto-resume after 4 hours
         async def auto_resume():
-            await discord.utils.sleep_until(datetime.datetime.utcnow() + datetime.timedelta(hours=4))
+            await discord.utils.sleep_until(
+                datetime.datetime.utcnow() + datetime.timedelta(hours=4)
+            )
             set_pause_state(False)
             await log_to_discord(self.bot, "Weather auto-resumed after 4-hour pause.")
 
@@ -63,6 +73,9 @@ class SeasonCommands(commands.Cog):
 
     @app_commands.command(name="restartweather", description="Resume weather updates immediately")
     async def restart_weather(self, interaction: Interaction):
+        """
+        Admin-only command to resume weather changes immediately.
+        """
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("You must be an admin to use this command.", ephemeral=True)
             return
