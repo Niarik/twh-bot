@@ -94,3 +94,7 @@ def resume_weather():
 def set_bot(bot):
     global bot_reference
     bot_reference = bot
+
+def start_season_schedule():
+    cycle_weather.start()
+    update_water_quality.start()
