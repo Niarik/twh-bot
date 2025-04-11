@@ -55,7 +55,11 @@ async def on_message(message):
                 # Handle specific commands
                 if command_message == "!pingme":
                     # Respond to the player in-game with a whisper
-                    mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
+                    from mcrcon import MCRcon
+
+                    with MCRcon(RCON_HOST, RCON_PASSWORD, port=RCON_PORT) as mcr:
+                        mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
+
 
                 elif command_message == "!testing":
                     await message.channel.send(f"✅ Testing message received from `{user_id}`.")
