@@ -1,4 +1,3 @@
-# weather_cycle.py
 import random
 from discord.ext import tasks
 from datetime import datetime, timedelta
@@ -6,6 +5,7 @@ import asyncio
 import os
 import json
 from seasons import get_current_season, get_current_season_times
+from mcrcon import MCRcon
 
 current_weather = None
 bot_reference = None
@@ -36,20 +36,29 @@ with open("config.json", "r") as f:
 @tasks.loop(minutes=config["interval_minutes"])
 async def cycle_weather():
     global current_weather
+
     if paused_until and datetime.utcnow() < paused_until:
         return
 
-import os
+    season = get_current_season()
+    weather_choices = SEASON_WEATHER.get(season, ["clearsky"])
 
-with MCRcon(
-    os.getenv("RCON_HOST"),
-    os.getenv("RCON_PASSWORD"),
-    port=int(os.getenv("RCON_PORT"))
-) as mcr:
+    if season == "The Blooming" and current_weather in ["rain", "storm"]:
+        weather_choices = [w for w in weather_choices if w not in ["rain", "storm"]]
+
+    chosen_weather = random.choice(weather_choices)
+    current_weather = chosen_weather
+
+    with MCRcon(
+        os.getenv("RCON_HOST"),
+        os.getenv("RCON_PASSWORD"),
+        port=int(os.getenv("RCON_PORT"))
+    ) as mcr:
+        mcr.command(f"/weather {chosen_weather}")
+        print(f"[Weather Update] {chosen_weather}")
 
 @tasks.loop(hours=3)
 async def update_water_quality():
-    rcon = config["rcon"]
     season = get_current_season()
     rules = SEASON_WATER_RULES.get(season)
 
@@ -57,11 +66,14 @@ async def update_water_quality():
         print("No water update needed for this season.")
         return
 
-    from mcrcon import MCRcon
-    with MCRcon(rcon["host"], rcon["password"], port=rcon["port"]) as mcr:
+    with MCRcon(
+        os.getenv("RCON_HOST"),
+        os.getenv("RCON_PASSWORD"),
+        port=int(os.getenv("RCON_PORT"))
+    ) as mcr:
         for location in IMPORTANT_WATER_LOCATIONS:
-            if "partial" in rules and location in IMPORTANT_WATER_LOCATIONS:
-                value = rules["partial"] if location in IMPORTANT_WATER_LOCATIONS else rules["set"]
+            if "partial" in rules:
+                value = rules["partial"]
             else:
                 value = rules["set"]
             if value is not None:
@@ -82,14 +94,3 @@ def resume_weather():
 def set_bot(bot):
     global bot_reference
     bot_reference = bot
-
-def start_season_schedule(bot):
-    set_bot(bot)
-    cycle_weather.start()
-    update_water_quality.start()
-
-    # Confirm startup via Discord log channel
-    if bot_reference:
-        log_channel = bot_reference.get_channel(1359506060414812284)
-        if log_channel:
-            asyncio.create_task(log_channel.send("✅ poll_ingame_chat is active."))
