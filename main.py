@@ -56,7 +56,7 @@ async def on_message(message):
                 if command_message == "!pingme":
                     try:
                         with MCRcon(RCON_HOST, RCON_PASSWORD, port=RCON_PORT) as mcr:
-                            mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
+                            mcr.command(f"/systemmessage {user_id} Ping received. Bot is connected and listening.")
                     except Exception as e:
                         print(f"[RCON Error] Could not send ping reply: {e}")
 
