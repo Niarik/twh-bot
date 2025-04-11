@@ -63,9 +63,6 @@ async def handle_ingame_command(message: str, user_id: str):
             if message == "!pingme":
                 whisper(mcr, user_id, "Ping received. Bot is connected and listening.")
 
-            elif message in ADMIN_ONLY_COMMANDS and user_id not in AUTHORIZED_IDS:
-                return
-
             elif message in TP_COORDINATES:
                 coords = random.choice(TP_COORDINATES[message])
                 mcr.command(f"/teleport ({coords})")
