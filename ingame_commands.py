@@ -1,3 +1,53 @@
+import json
+import random
+import time
+from mcrcon import MCRcon
+
+TP_COORDINATES = {
+    "!redisland": [
+        "x=50676 y=312304 z=-3042",
+        "x=-54464 y=327838 z=1422",
+        "x=-85760 y=350807 z=-3288"
+    ],
+    "!whitecliffs": [
+        "x=-227628 y=-103155 z=1215",
+        "x=-222949 y=-97014 z=3073",
+        "x=-220150 y=-106305 z=-3986"
+    ],
+    "!whistling": [
+        "x=-44054 y=195274 z=-2559",
+        "x=-51945 y=185067 z=-2244",
+        "x=-25180 y=195142 z=181"
+    ],
+    "!tparbour": [
+        "x=-298134 y=-64097 z=-2734"
+    ],
+    "!tpyaga": [
+        "x=-154056 y=136070 z=907",
+    ],
+    "!tpvalkov": [
+        "x=-122689 y=79773 z=2043",
+    ],
+    "!tpbogwitch": [
+        "x=-59631 y=-107544 z=-937",
+    ],
+    "!tpshaded": [
+        "0 0 0"
+    ],
+}
+
+RESPAWN_COOLDOWNS = {}
+RESPAWN_COOLDOWN_SECONDS = 3600
+LOG_CHANNEL_ID = 1359506060414812284
+bot_instance = None
+
+def set_bot(bot):
+    global bot_instance
+    bot_instance = bot
+
+def whisper(mcr, user_id, text):
+    mcr.command(f"/whisper {user_id} {text}")
+
 async def handle_ingame_command(message: str, user_id: str):
     message = message.strip().lower()
 
