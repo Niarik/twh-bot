@@ -18,22 +18,22 @@ TP_COORDINATES = {
         "x=-44054 y=195274 z=-2559",
         "x=-51945 y=185067 z=-2244",
         "x=-25180 y=195142 z=181"
-    ]
+    ],
     "!tparbour": [
-        "x=-298134 y=-64097 z=-2734",
-    ]
+        "x=-298134 y=-64097 z=-2734"
+    ],
     "!tpyaga": [
         "x=-154056 y=136070 z=907",
-    ]
+    ],
     "!tpvalkov": [
         "x=-122689 y=79773 z=2043",
-    ]
+    ],
     "!tpbogwitch": [
         "x=-59631 y=-107544 z=-937",
-    ]
+    ],
     "!tpshaded": [
         "0 0 0"
-    ]
+    ],
 }
 
 RESPAWN_COOLDOWNS = {}
@@ -89,17 +89,21 @@ async def handle_ingame_command(message: str, user_id: str):
                     whisper(mcr, user_id, "You have been respawned.")
                     RESPAWN_COOLDOWNS[user_id] = now
 
-            elif command == "!setgrowth":
-                try:
-                    growth = float(args)
-                    if 0.0 <= growth <= 1.0:
-                        mcr.command(f"/setattr {player_name} growth {growth}")
-                        mcr.command(f"/setattr {player_name} GrowthPerSecond 0")
-                        print(f"[SetGrowth] {player_name} set to {growth} and frozen")
-                    else:
-                        print(f"[Error] Invalid growth value: {growth}")
-                except ValueError:
-                    print(f"[Error] Could not parse growth value: {args}")
+            elif message.startswith("!setgrowth"):
+                parts = message.split()
+                if len(parts) == 2:
+                    try:
+                        growth = float(parts[1])
+                        if 0 <= growth <= 1:
+                            mcr.command(f"/setattr {user_id} growth {growth}")
+                            mcr.command(f"/setattr {user_id} GrowthPerSecond 0")
+                            whisper(mcr, user_id, f"Growth set to {growth} and frozen.")
+                        else:
+                            whisper(mcr, user_id, "Growth must be between 0 and 1.")
+                    except ValueError:
+                        whisper(mcr, user_id, "Please use a valid number like `!setgrowth 0.85`.")
+                else:
+                    whisper(mcr, user_id, "Usage: !setgrowth 0.85")
 
     except Exception as e:
         print(f"[In-game Command Error] {e}")
