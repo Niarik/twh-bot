@@ -4,6 +4,15 @@ RCON_HOST = os.getenv("RCON_HOST")
 RCON_PORT = int(os.getenv("RCON_PORT"))
 RCON_PASSWORD = os.getenv("RCON_PASSWORD")
 
+import json
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+INTERVAL_MINUTES = config["interval_minutes"]
+ANNOUNCE_CHANNEL_ID = config["announce_channel_id"]
+LOG_CHANNEL_ID = config["log_channel_id"]
+
 import discord
 from discord.ext import commands
 from weather_cycle import start_season_schedule
