@@ -79,4 +79,15 @@ async def resumeweather(ctx):
     resume_weather()
     await ctx.send("▶️ Weather updates resumed.")
 
+@bot.command()
+async def seasonstatus(ctx):
+    """Displays the current season and timing."""
+    current_season = get_current_season()
+    times = get_current_season_times()
+    start_time = times['start_time']
+    end_time = times['end_time']
+    await ctx.send(f"🗓️ Current season: **{current_season.title()}**\n"
+                   f"Start: **{start_time}**\n"
+                   f"End: **{end_time}**")
+
 bot.run(os.getenv("BOT_TOKEN"))
