@@ -57,4 +57,8 @@ async def on_message(message):
                     # Respond to the player in-game with a whisper
                     mcr.command(f"/whisper {user_id} Ping received. Bot is connected and listening.")
 
+                elif command_message == "!testing":
+                    await message.channel.send(f"✅ Testing message received from `{user_id}`.")
+
+
 bot.run(os.getenv("BOT_TOKEN"))
