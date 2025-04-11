@@ -60,6 +60,16 @@ async def handle_ingame_command(message: str, user_id: str):
             port=int(os.getenv("RCON_PORT"))
         ) as mcr:
 
+
+            elif message == "!testing":
+                # Send a confirmation message to Discord via the bot
+                channel = message.channel
+                if channel:
+                    await channel.send(f"✅ Testing message received from `{user_id}`.")
+                else:
+                    print("[Test] No channel found to respond in.")
+
+            
             if message == "!pingme":
                 whisper(mcr, user_id, "Ping received. Bot is connected and listening.")
 
