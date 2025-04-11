@@ -17,20 +17,20 @@ SEASONS = [
 
 SEASON_DATA = {
     "The Blooming": {
-        "banner_url": "https://yourdomain.com/theblooming.png",
-        "narrative": "The world bursts into color and rain nourishes the land. Storms are common, but so is new life.",
+        "banner_url": "https://github.com/Niarik/twh-bot/blob/main/theblooming.png",
+        "narrative": "The last of the snow has finally thawed, warm rain sweeps in and keeps water sources full to bursting and food sources plentiful. Chilly mornings and evenings are accompanied by thick fog, the weather varies from lengthy storms to brief showers. When the rain clears, it is cloudy and overcast, but the days are warm enough for most species to begin their first wave of nesting, hoping to raise their hatchlings enough to get them through the coming drought.",
     },
     "The Drought": {
-        "banner_url": "https://yourdomain.com/thedrought.png",
-        "narrative": "The land dries and cracks under a burning sun. Only the strongest can endure the thirst.",
+        "banner_url": "https://github.com/Niarik/twh-bot/blob/main/thedrought.png",
+        "narrative": "The drought is a true survival test for most species, as the rains disappear and the water sources dry up. Rare storms bring some relief, but most species will have to move often and venture outside of their territories to find enough water to survive. Hatchlings born in this season face enormous challenges and rarely make it to The Brightening.",
     },
     "The Brightening": {
-        "banner_url": "https://yourdomain.com/thebrightening.png",
-        "narrative": "Skies clear as light returns, but rain blesses the land just once a day.",
+        "banner_url": "https://github.com/Niarik/twh-bot/blob/main/thebrightening.png",
+        "narrative": "The Brightening is the comfortably warm season following the drought. The weather is typically clear and bright, with periodic rains keeping water sources flowing and food plentiful. Many species will have a second wave of nests during this season, the last of the year. Towards the end of the season, most species will settle into territories they can stay in for The Freeze.",
     },
     "The Freeze": {
-        "banner_url": "https://yourdomain.com/thefreeze.png",
-        "narrative": "A chill seizes the land. Fog clings to still waters. Only the resilient survive the cold.",
+        "banner_url": "https://github.com/Niarik/twh-bot/blob/main/thefreeze.png",
+        "narrative": "During The Freeze, frosts are soon followed by thick snowfall, the temperature turns bitterly cold, many plants go dormant and water sources freeze over. Water is still accessible for large species who can break the ice, but some herds may have to periodically travel in search of roots and nuts. Carnivores are particularly dangerous during The Freeze, driven from their winter dens only by extreme hunger.",
     }
 }
 
