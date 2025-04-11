@@ -82,9 +82,9 @@ async def update_water_quality():
 
 # Update these variables wherever your weather logic runs
 def get_weather_info():
-    global current_weather,
-    return current_weather,
-
+    global current_weather
+    return current_weather
+    
 # Pausing logic
 def pause_weather_for(hours):
     global paused_until
