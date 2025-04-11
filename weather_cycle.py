@@ -39,22 +39,13 @@ async def cycle_weather():
     if paused_until and datetime.utcnow() < paused_until:
         return
 
-    rcon = config["rcon"]
-    season = get_current_season()
-    weather_choices = SEASON_WEATHER.get(season, ["clearsky"])
+import os
 
-    if season == "The Blooming":
-        # Avoid repeating rain or storm too frequently
-        if current_weather in ["rain", "storm"]:
-            weather_choices = [w for w in weather_choices if w not in ["rain", "storm"]]
-
-    chosen_weather = random.choice(weather_choices)
-    current_weather = chosen_weather
-
-    from mcrcon import MCRcon
-    with MCRcon(rcon["host"], rcon["password"], port=rcon["port"]) as mcr:
-        mcr.command(f"/weather {chosen_weather}")
-        print(f"[Weather Update] {chosen_weather}")
+with MCRcon(
+    os.getenv("RCON_HOST"),
+    os.getenv("RCON_PASSWORD"),
+    port=int(os.getenv("RCON_PORT"))
+) as mcr:
 
 @tasks.loop(hours=3)
 async def update_water_quality():
