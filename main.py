@@ -6,6 +6,7 @@ from mcrcon import MCRcon
 from weather_cycle import start_season_schedule
 from ingame_commands import handle_ingame_command, set_bot
 from seasons import post_season_announcement, get_current_season, get_current_season_times
+from weather_cycle import pause_weather_for, resume_weather
 
 # Load RCON credentials from environment
 RCON_HOST = os.getenv("RCON_HOST")
@@ -65,5 +66,17 @@ async def on_message(message):
                 else:
                     # Optional: pass unrecognized commands to the ingame handler
                     await handle_ingame_command(message)
+
+@bot.command()
+async def pauseweather(ctx, hours: int = 4):
+    """Pauses weather updates for a set number of hours (default 6)."""
+    pause_weather_for(hours)
+    await ctx.send(f"⏸️ Weather updates paused for {hours} hour(s).")
+
+@bot.command()
+async def resumeweather(ctx):
+    """Resumes weather updates immediately."""
+    resume_weather()
+    await ctx.send("▶️ Weather updates resumed.")
 
 bot.run(os.getenv("BOT_TOKEN"))
