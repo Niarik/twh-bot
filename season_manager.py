@@ -16,61 +16,53 @@ SEASONS = [
 SEASON_DATA = {
     "The Blooming": {
         "banner_url": "https://raw.githubusercontent.com/Niarik/twh-bot/main/theblooming.png",
-        # Long, detailed narrative for #seasons channel
         "narrative": (
-            "**The Blooming**\n\n"
-            "> The last of the snow has finally thawed; warm rain sweeps in and keeps water sources full to bursting and food sources plentiful."
-            "> Chilly mornings and evenings are accompanied by thick fog; the weather varies from lengthy storms to brief showers."
-            "> When the rain clears, it is cloudy and overcast, but the days are warm enough for most species to begin their first wave of nesting, hoping to raise their hatchlings "
-            "enough to get them through the coming drought."
+            "> The last of the snow has finally thawed, warm rain sweeps in and keeps water sources full to bursting and food sources plentiful. Chilly mornings and evenings are accompanied by thick fog, the weather varies from lengthy storms to brief showers. When the rain clears, it is cloudy and overcast, but the days are warm enough for most species to begin their first wave of nesting, hoping to raise their hatchlings enough to get them through the coming drought."
         ),
-        # Short announcement for #announcements channel
         "announcement": (
-            "🌸 **The Blooming has arrived** 🌸\n\n"
-            "- Warm rains and storms\n"
-            "- Thick fog in mornings and evenings\n"
-            "- Food and water sources are abundant\n"
+            "## 🌸 **The Blooming has arrived** 🌸\n\n"
+            "> * Frequent rain and storms, mornings are chilly, daytimes are warm\n"
+            "> * Food and water sources are abundant\n"
+            "> * Most species are nesting\n"            
         ),
         "emoji": "🌸"
     },
     "The Drought": {
         "banner_url": "https://raw.githubusercontent.com/Niarik/twh-bot/main/thedrought.png",
         "narrative": (
-            "☀️ **The Drought** ☀️\n\n"
-            "> The rains vanish and the heat scorches the land. Water sources dry up and only the strongest endure."
+            "> The drought is a true survival test for most species, as the rains disappear and the water sources dry up. Rare storms bring some relief, but most species will have to move often and venture outside of their territories to find enough water to survive. Hatchlings born in this season face enormous challenges and rarely make it to The Brightening."
         ),
         "announcement": (
             "## ☀️ **The Drought has begun** ☀️\n\n"
-            "> * It's well hot, might be too hot\n"
             "> * Water is scarce\n"
             "> * Wildfires possible\n"
+            "> * Suffer quietly as you burn.\n"
         ),
         "emoji": "☀️"
     },
     "The Brightening": {
         "banner_url": "https://raw.githubusercontent.com/Niarik/twh-bot/main/thebrightening.png",
         "narrative": (
-            "**The Brightening**\n\n"
-            "The land recovers with light rain and warming sun. This is a season of balance "
-            "and rebuilding."
+            "> The Brightening is the comfortably warm season following the drought. The weather is typically clear and bright, with periodic rains keeping water sources flowing and food plentiful. Many species will have a second wave of nests during this season, the last of the year. Towards the end of the season, most species will settle into territories they can stay in for The Freeze."
         ),
         "announcement": (
-            "🌤️ **The Brightening is here** 🌤️\n\n"
-            "- Bright days with occasional rain\n"
-            "- Nests resume, water and food begin to return"
+            "## 🌤️ **The Brightening is here** 🌤️\n\n"
+            "> * The heat of the drought has eased but the weather remains clear\n"
+            "> * Water sources have been replenished by periodic rains and the heat is not enough to deplete them\n"
+            "> * The next wave of nesting has arrived for many species\n"
         ),
         "emoji": "🌤️"
     },
     "The Freeze": {
         "banner_url": "https://raw.githubusercontent.com/Niarik/twh-bot/main/thefreeze.png",
         "narrative": (
-            "**The Freeze**\n\n"
-            "Snow blankets the land and bitter winds howl. Only the most prepared survive the cold."
+                "> During The Freeze, frosts are soon followed by thick snowfall, the temperature turns bitterly cold, many plants go dormant and water sources freeze over. Water is still accessible for large species who can break the ice, but some herds may have to periodically travel in search of roots and nuts. Carnivores are particularly dangerous during The Freeze, driven from their winter dens only by extreme hunger."
         ),
         "announcement": (
-            "❄️ **The Freeze has arrived** ❄️\n\n"
-            "- Snow, fog and biting cold\n"
-            "- Water sources freeze, food dwindles"
+            "## ❄️ **The Freeze has arrived** ❄️\n\n"
+            "> * The weather is cold, snowy and foggy\n"
+            "> * Small water sources (excluding the Hot Springs) have frozen over completely but large water sources are kept flowing by large dinosaurs\n"
+            "> * Freeze without complaint.\n"
         ),
         "emoji": "❄️"
     }
@@ -82,8 +74,8 @@ class SeasonManager:
 
     async def check_season_change(self):
         """
-        Checks if 14 days have elapsed since last season start.
-        If so, rotate to the next season.
+        If no stored season or 14+ days have passed since last start,
+        move to the next season. Otherwise do nothing.
         """
         last = get_last_season()
         now = datetime.datetime.utcnow()
@@ -91,13 +83,14 @@ class SeasonManager:
         if last:
             start = datetime.datetime.fromisoformat(last["start"])
             if (now - start).days < SEASON_LENGTH_DAYS:
-                # Not yet time to switch
+                # Not enough days have passed
                 return
 
+            # Rotate to next season in SEASONS list
             last_index = SEASONS.index(last["season"])
             new_index = (last_index + 1) % len(SEASONS)
         else:
-            # No previous season => start with The Blooming
+            # If no previous season is saved, start at index 0
             new_index = 0
 
         new_season = SEASONS[new_index]
@@ -105,7 +98,7 @@ class SeasonManager:
 
     async def manual_set_season(self, season_name):
         """
-        Force a season change from a slash command or direct call.
+        Allows an admin to force the season via slash command or direct call.
         """
         now = datetime.datetime.utcnow()
         if season_name not in SEASONS:
@@ -114,14 +107,26 @@ class SeasonManager:
 
     async def apply_season_change(self, season_name, timestamp):
         """
-        Applies the new season: updates #seasons channel and #announcements channel,
-        changes the channel name, posts the banner + narrative, logs the event.
+        Applies all season updates:
+          1. Check if we've already posted this season recently
+          2. Clean old bot messages in #season
+          3. Post banner + narrative to #season
+          4. Post short announcement in #announcements
+          5. Rename channel with the new season emoji
+          6. Save the new season to storage
+          7. Log to #twh-bot-logs
         """
         season_channel = self.bot.get_channel(CHANNEL_IDS["season"])
-        announcements_channel = self.bot.get_channel(CHANNEL_IDS["announcements"])
+        announcements = self.bot.get_channel(CHANNEL_IDS["announcements"])
+
+        # Skip if we already posted this season
+        if await self.check_already_posted(season_channel, season_name):
+            print(f"Skipping re-post: the channel already has {season_name}.")
+            return
+
         data = SEASON_DATA[season_name]
 
-        # Clean old season posts in #seasons
+        # Clean up old season posts by our bot
         try:
             async for msg in season_channel.history(limit=5):
                 if msg.author == self.bot.user:
@@ -129,56 +134,55 @@ class SeasonManager:
         except Exception as e:
             print("Failed to clean season messages:", e)
 
-        # Calculate timestamps
+        # Format timestamps
         start_ts = discord.utils.format_dt(timestamp, style='F')
-        end_obj = timestamp + datetime.timedelta(days=SEASON_LENGTH_DAYS)
-        end_ts = discord.utils.format_dt(end_obj, style='F')
-        end_rel = discord.utils.format_dt(end_obj, style='R')
+        end_time = timestamp + datetime.timedelta(days=SEASON_LENGTH_DAYS)
+        end_ts = discord.utils.format_dt(end_time, style='F')
+        end_rel = discord.utils.format_dt(end_time, style='R')
 
-        # Update #seasons channel
+        # Post banner + narrative
+        await season_channel.send(data["banner_url"])
+        narrative_msg = (
+            f"{data['narrative']}\n\n"
+            f"This season began {start_ts} and ends {end_ts} {end_rel}."
+        )
+        await season_channel.send(narrative_msg)
+
+        # Short announcement embed
+        embed = discord.Embed(
+            description=data["announcement"],
+            color=discord.Color.green()
+        )
+        ann_msg = await announcements.send(embed=embed)
+        # Try to publish if it's a News channel
         try:
-            # 1) rename channel
+            await ann_msg.publish()
+        except Exception:
+            pass  # Not a News channel, ignore
+
+        # Rename channel
+        try:
             await season_channel.edit(name=f"{data['emoji']}season{data['emoji']}")
         except Exception as e:
             print("Failed to rename channel:", e)
 
-        try:
-            # 2) post banner
-            await season_channel.send(data["banner_url"])
-
-            # 3) post narrative
-            narrative_msg = (
-                f"{data['narrative']}\n\n"
-                f"This season began {start_ts} and ends {end_ts} {end_rel}."
-            )
-            await season_channel.send(narrative_msg)
-
-        except Exception as e:
-            print("Failed to post banner/narrative:", e)
-
-        # Announcements
-        try:
-            # 4) post simplified announcement embed
-            embed = discord.Embed(
-                description=data["announcement"],
-                color=discord.Color.green()
-            )
-            ann_msg = await announcements_channel.send(embed=embed)
-
-            # 5) publish the announcement if it's a news channel
-            try:
-                await ann_msg.publish()
-            except Exception:
-                pass  # probably not a news channel
-
-        except Exception as e:
-            print("Failed to post announcement:", e)
-
-        # Save the new season info
+        # Record the new season
         set_last_season({
             "season": season_name,
             "start": timestamp.isoformat()
         })
 
-        # Log
         await log_to_discord(self.bot, f"Season changed to {season_name}")
+
+    async def check_already_posted(self, season_channel, season_name):
+        """
+        Checks the recent bot messages in #season 
+        to see if there's already an announcement for this season.
+        If we find a mention of the same season, we skip re-posting.
+        """
+        async for msg in season_channel.history(limit=5):
+            if msg.author == self.bot.user:
+                # Check if the message text references this season's name
+                if season_name.lower() in msg.content.lower():
+                    return True
+        return False
