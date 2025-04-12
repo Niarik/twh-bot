@@ -7,7 +7,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 RCON_HOST = os.getenv("RCON_HOST")
 RCON_PORT = int(os.getenv("RCON_PORT"))
 RCON_PASSWORD = os.getenv("RCON_PASSWORD")
-YOUR_GUILD_ID = os.getenv("YOUR_GUILD_ID")
+GUILD_ID = int(os.getenv("GUILD_ID", "0"))
 
 CHANNEL_IDS = {
     "season": 1303375972258812036,
