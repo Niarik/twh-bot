@@ -17,6 +17,43 @@ SEASON_WEATHER_RULES = {
     "The Freeze": ["snow", "fog", "overcast", "cloudy"]
 }
 
+# Weather flavour dictionary
+WEATHER_FLAVOR = {
+    "rain": [
+        "🌧️ Rain begins to pelt the ground...",
+        "🌧️ A gentle rain patters across the land...",
+        "🌧️ A steady rain begins, soaking your scales..."
+    ],
+    "storm": [
+        "⛈️ Thunder rumbles overhead...",
+        "⛈️ The sky darkens as a storm brews overhead...",
+        "⛈️ Lightning flickers in the distance, thunder roars..."
+    ],
+    "overcast": [
+        "☁️ Dull grey clouds gather across the sky...",
+        "☁️ The sky is thick with grey clouds...",
+        "☁️ Grey clouds roll in..."
+    ],
+    "cloudy": [
+        "🌤️ Gentle clouds drift across the sky...",
+        "🌤️ The sun shines through fluffy white clouds..."
+    ],
+    "snow": [
+        "❄️ Snowflakes begin to fall slowly to the ground...",
+        "❄️ A thick flurry of snow sweeps in...",
+        "❄️ Thick, heavy snowfall drifts down from the clouds..."
+    ],
+    "clearsky": [
+        "☀️ The sun emerges, coating the world in warm light...",
+        "☀️ The relentless sun scorches the ground...",
+        "☀️ The earth is bathed in sunlight..."
+    ],
+    "fog": [
+        "🌫️ A thick fog rolls in..."
+        "🌫️ Mist rises, coating the world in white..."
+        "🌫️ The world vanishes in thick white fog..."
+}
+
 class WeatherManager:
     def __init__(self, bot):
         self.bot = bot
@@ -26,9 +63,7 @@ class WeatherManager:
 
     async def start_weather_loop(self):
         """
-        This method runs continuously. Every 20 minutes, it checks if 
-        weather updates are paused. If not, it picks new weather 
-        and applies it via RCON.
+        Repeats every 20 minutes. Checks pause state, picks new weather if unpaused.
         """
         while True:
             if not get_pause_state():
@@ -37,76 +72,79 @@ class WeatherManager:
 
     async def update_weather(self):
         """
-        Reads the current season from storage, picks a random weather type,
-        and sends the /weather command via RCON.
+        Reads the current season, picks a random weather type (with constraints),
+        sends an RCON command, and posts a flavor text message to #weather_updates.
         """
-        season_data = get_last_season()
-        if not season_data:
-            return  # No season has been set yet
+        season_info = get_last_season()
+        if not season_info:
+            # No season is set yet
+            return
 
-        season = season_data["season"]
+        season = season_info["season"]
         now = datetime.datetime.utcnow()
+        possible_weathers = SEASON_WEATHER_RULES.get(season, [])
+        if not possible_weathers:
+            return
 
-        # Get valid weather types for this season
-        valid_options = SEASON_WEATHER_RULES.get(season, [])
-        if not valid_options:
-            return  # No valid weather for this season?
-
-        chosen_weather = await self.pick_weather(season, valid_options, now)
+        chosen_weather = await self.pick_weather(season, possible_weathers, now)
         if chosen_weather:
-            # Send RCON command
+            # Send RCON command to the server
             await send_rcon_command(f"/weather {chosen_weather}")
-            # Store the new weather so /seasoninfo can show it
             set_last_weather(chosen_weather)
 
-            # Announce weather update in #weather_updates channel
-            channel = self.bot.get_channel(CHANNEL_IDS["weather_updates"])
-            if channel:
-                await channel.send(f"**Weather Update:** `{chosen_weather}` now active.")
-            await log_to_discord(self.bot, f"[WeatherManager] Changed weather to `{chosen_weather}`")
+            # Select flavor text if available
+            flavor_lines = WEATHER_FLAVOR.get(chosen_weather, [])
+            if flavor_lines:
+                flavor_text = random.choice(flavor_lines)
+            else:
+                flavor_text = f"The weather is now {chosen_weather}."
+
+            # Post flavor text to weather_updates channel
+            weather_channel = self.bot.get_channel(CHANNEL_IDS["weather_updates"])
+            if weather_channel:
+                await weather_channel.send(flavor_text)
+
+            await log_to_discord(self.bot, f"[WeatherManager] Changed to '{chosen_weather}' - {flavor_text}")
 
     async def pick_weather(self, season, options, now):
         """
-        Returns a randomly chosen weather type, taking into account
-        any special conditions such as:
-          - The Blooming: no more than two consecutive rain/storm
-          - The Brightening: only one rain every 6 hours
+        Chooses weather based on:
+          - Blooming: avoid 3 consecutive rain/storm
+          - Brightening: only 1 rain every 6 hours with a 25% chance
+          - Otherwise, random from the valid options
         """
         from storage import get_last_weather
-        last_weather = get_last_weather() or ""
+        last_weather = get_last_weather()
 
         if season == "The Blooming":
-            # Avoid 3 consecutive rain/storm
-            if last_weather in ["rain", "storm"]:
+            # If last weather was rain/storm, increment streak
+            if last_weather in ("rain", "storm"):
                 self.blooming_streak += 1
             else:
                 self.blooming_streak = 0
 
+            # If we've had 2 consecutive rain/storm, pick something else
             if self.blooming_streak >= 2:
-                # Exclude rain and storm from choices
-                safe_options = [w for w in options if w not in ("rain", "storm")]
-                if safe_options:
-                    return random.choice(safe_options)
-                # If somehow only rain/storm exist, fallback to full options
+                safe = [w for w in options if w not in ("rain", "storm")]
+                if safe:
+                    return random.choice(safe)
 
         elif season == "The Brightening":
-            # Permit rain only once every 6 hours
+            # If we rained <6 hours ago, remove 'rain' from the list
             if self.last_rain_time:
                 six_hours_ago = now - datetime.timedelta(hours=6)
                 if self.last_rain_time > six_hours_ago:
-                    # Exclude 'rain'
-                    safe_options = [w for w in options if w != "rain"]
-                    return random.choice(safe_options)
+                    safe = [w for w in options if w != "rain"]
+                    return random.choice(safe)
 
-            # There's a 25% chance to pick rain
-            # (You can adjust probability as you like)
+            # If we didn't remove 'rain', there's a 25% chance to choose it
             if "rain" in options and random.random() < 0.25:
                 self.last_rain_time = now
                 return "rain"
             else:
-                # Exclude rain for this cycle
-                safe_options = [w for w in options if w != "rain"]
-                return random.choice(safe_options)
+                # Otherwise exclude rain for this cycle
+                safe = [w for w in options if w != "rain"]
+                return random.choice(safe)
 
-        # Default fallback: pick from all valid options
+        # Default random pick
         return random.choice(options)
