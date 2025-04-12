@@ -78,4 +78,5 @@ class WaterManager:
         for cmd in commands:
             await send_rcon_command(cmd)
 
-        await log_to_discord(None, f\"[Water Manager] Applied {len(commands)} water quality updates for {season}\")
+        await log_to_discord(None, f"[Water Manager] Applied {len(commands)} water quality updates for {season}")
+
