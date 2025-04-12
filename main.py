@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from discord import Intents
 from config import BOT_TOKEN
-from config import UILD_ID
+from config import GUILD_ID
 from season_manager import SeasonManager
 from weather_manager import WeatherManager
 from water_manager import WaterManager
