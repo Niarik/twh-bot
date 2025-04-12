@@ -21,24 +21,20 @@ water_manager = WaterManager()
 async def on_ready():
     print(f"Bot connected as {bot.user}")
 
-    # Register (sync) slash commands
+    # Guild-based command sync
+    guild = discord.Object(id=YOUR_GUILD_ID)
     try:
-        synced = await bot.tree.sync()
-        print(f"Synced {len(synced)} slash commands.")
+        synced = await bot.tree.sync(guild=guild)
+        print(f"Synced {len(synced)} slash commands to guild {guild.id}.")
     except Exception as e:
-        print(f"Failed to sync commands: {e}")
+        print(f"Failed to sync guild commands: {e}")
 
-    # Add our slash commands
     await bot.add_cog(SeasonCommands(bot))
 
-    # Immediately check if the season needs to change
     await season_manager.check_season_change()
-
-    # Start the weather and water loops
     await weather_manager.start_weather_loop()
     await water_manager.start_water_loop()
 
-    # Start the webhook listener (for in-game commands)
     asyncio.create_task(run_webhook_listener(bot))
 
 bot.run(BOT_TOKEN)
