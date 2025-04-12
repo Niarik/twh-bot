@@ -49,9 +49,10 @@ WEATHER_FLAVOR = {
         "☀️ The earth is bathed in sunlight..."
     ],
     "fog": [
-        "🌫️ A thick fog rolls in..."
-        "🌫️ Mist rises, coating the world in white..."
+        "🌫️ A thick fog rolls in...",
+        "🌫️ Mist rises, coating the world in white...",
         "🌫️ The world vanishes in thick white fog..."
+    ]
 }
 
 class WeatherManager:
