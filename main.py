@@ -1,7 +1,9 @@
 import asyncio
+import discord
 from discord.ext import commands
 from discord import Intents
 from config import BOT_TOKEN
+from config import UILD_ID
 from season_manager import SeasonManager
 from weather_manager import WeatherManager
 from water_manager import WaterManager
@@ -21,13 +23,18 @@ water_manager = WaterManager()
 async def on_ready():
     print(f"Bot connected as {bot.user}")
 
-    # Guild-based command sync
-    guild = discord.Object(id=YOUR_GUILD_ID)
     try:
-        synced = await bot.tree.sync(guild=guild)
-        print(f"Synced {len(synced)} slash commands to guild {guild.id}.")
+        # Use the GUILD_ID from your config/env
+        if GUILD_ID != 0:
+            guild = discord.Object(id=GUILD_ID)
+            synced = await bot.tree.sync(guild=guild)
+            print(f"Synced {len(synced)} slash commands to guild {GUILD_ID}.")
+        else:
+            # Fallback to global sync if GUILD_ID=0 or missing
+            synced = await bot.tree.sync()
+            print(f"Synced {len(synced)} slash commands globally.")
     except Exception as e:
-        print(f"Failed to sync guild commands: {e}")
+        print(f"Failed to sync commands: {e}")
 
     await bot.add_cog(SeasonCommands(bot))
 
