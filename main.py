@@ -26,7 +26,7 @@ async def on_ready():
     try:
         # Use the GUILD_ID from your config/env
         if GUILD_ID != 0:
-            guild = discord.Object(id=GUILD_ID)
+            guild = discord.Object(id=1302597482274095227)
             synced = await bot.tree.sync(guild=guild)
             print(f"Synced {len(synced)} slash commands to guild {GUILD_ID}.")
         else:
