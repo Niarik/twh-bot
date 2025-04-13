@@ -23,6 +23,8 @@ water_manager = WaterManager()
 async def on_ready():
     print(f"Bot connected as {bot.user}")
 
+    await bot.add_cog(SeasonCommands(bot))
+
     # Just sync commands and NOTHING ELSE
     guild = discord.Object(id=GUILD_ID)
     synced = await bot.tree.sync(guild=guild)
@@ -32,6 +34,8 @@ async def on_ready():
 #@bot.event
 #async def on_ready():
 #    print(f"Bot connected as {bot.user}")
+
+#    await bot.add_cog(SeasonCommands(bot))
 
 #    try:
         # Use the GUILD_ID from your config/env
@@ -45,8 +49,6 @@ async def on_ready():
 #            print(f"Synced {len(synced)} slash commands globally.")
 #    except Exception as e:
 #        print(f"Failed to sync commands: {e}")
-
-#    await bot.add_cog(SeasonCommands(bot))
 
     # Ensure the current season is correct at startup
  #   await season_manager.check_season_change()
