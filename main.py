@@ -23,27 +23,37 @@ water_manager = WaterManager()
 async def on_ready():
     print(f"Bot connected as {bot.user}")
 
-    try:
-        # Use the GUILD_ID from your config/env
-        if GUILD_ID != 0:
-            guild = discord.Object(id=1302597482274095227)
-            synced = await bot.tree.sync(guild=guild)
-            print(f"Synced {len(synced)} slash commands to guild {GUILD_ID}.")
-        else:
-            # Fallback to global sync if GUILD_ID=0 or missing
-            synced = await bot.tree.sync()
-            print(f"Synced {len(synced)} slash commands globally.")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
+    # Just sync commands and NOTHING ELSE
+    guild = discord.Object(id=GUILD_ID)
+    synced = await bot.tree.sync(guild=guild)
+    print(f"Synced {len(synced)} slash commands to guild {GUILD_ID}.")
 
-    await bot.add_cog(SeasonCommands(bot))
+
+#@bot.event
+#async def on_ready():
+#    print(f"Bot connected as {bot.user}")
+
+#    try:
+        # Use the GUILD_ID from your config/env
+#        if GUILD_ID != 0:
+#            guild = discord.Object(id=1302597482274095227)
+#            synced = await bot.tree.sync(guild=guild)
+#            print(f"Synced {len(synced)} slash commands to guild {GUILD_ID}.")
+#        else:
+            # Fallback to global sync if GUILD_ID=0 or missing
+#            synced = await bot.tree.sync()
+#            print(f"Synced {len(synced)} slash commands globally.")
+#    except Exception as e:
+#        print(f"Failed to sync commands: {e}")
+
+#    await bot.add_cog(SeasonCommands(bot))
 
     # Ensure the current season is correct at startup
-    await season_manager.check_season_change()
+ #   await season_manager.check_season_change()
 
     # Run loops as background tasks
-    asyncio.create_task(weather_manager.start_weather_loop())
-    asyncio.create_task(water_manager.start_water_loop())
-    asyncio.create_task(run_webhook_listener(bot))
+   # asyncio.create_task(weather_manager.start_weather_loop())
+  #  asyncio.create_task(water_manager.start_water_loop())
+   # asyncio.create_task(run_webhook_listener(bot))
 
 bot.run(BOT_TOKEN)
