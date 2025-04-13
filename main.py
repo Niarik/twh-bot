@@ -38,10 +38,12 @@ async def on_ready():
 
     await bot.add_cog(SeasonCommands(bot))
 
+    # Ensure the current season is correct at startup
     await season_manager.check_season_change()
-    await weather_manager.start_weather_loop()
-    await water_manager.start_water_loop()
 
+    # Run loops as background tasks
+    asyncio.create_task(weather_manager.start_weather_loop())
+    asyncio.create_task(water_manager.start_water_loop())
     asyncio.create_task(run_webhook_listener(bot))
 
 bot.run(BOT_TOKEN)
